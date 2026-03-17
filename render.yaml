@@ -1,0 +1,36 @@
+# =============================================================================
+# DEPLOY NOW WORKSHOP — render.yaml
+# =============================================================================
+#
+# This is a Render Blueprint file. It pre-configures your web service so you
+# don't have to fill in every field manually in the Render dashboard.
+#
+# HOW TO USE (optional):
+#   In the Render dashboard, click "New → Blueprint" and connect this repo.
+#   Render will read this file and create the web service automatically.
+#
+# OR: Configure manually in the Render dashboard using docs/FAST_PATH.md.
+#     Both approaches work identically.
+#
+# DOCS: https://render.com/docs/blueprint-spec
+# =============================================================================
+
+services:
+  - type: web
+    name: deploy-now-workshop
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+
+    # Auto-deploy whenever the main branch is pushed to.
+    branch: main
+    autoDeploy: true
+
+    # Free tier — check render.com for current requirements.
+    plan: free
+
+    # Environment variables for the Node.js app.
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: NODE_ENV
+        value: production

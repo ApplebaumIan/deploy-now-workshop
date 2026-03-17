@@ -1,50 +1,47 @@
-# ---- Build stage: install Laravel with Composer ----
-FROM php:8.2-cli AS builder
-ENV DEBIAN_FRONTEND=noninteractive
+# =============================================================================
+# DEPLOY NOW WORKSHOP — Dockerfile
+# =============================================================================
+#
+# This file tells Docker how to package and run the app.
+# It is used by:
+#   - Render (production deployment)  — same image, runs in the cloud
+#   - Docker Compose (local dev)      — same image, runs on your laptop
+#
+# That consistency is the whole point: build once, run anywhere.
+#
+# HOW TO READ THIS FILE:
+#   Each instruction (FROM, WORKDIR, COPY, RUN, CMD) is one "layer."
+#   Docker caches layers. If nothing changed in a layer, it reuses the cache.
+#   That's why we COPY package*.json and npm install BEFORE copying the rest
+#   of the app — so npm install is only re-run when dependencies actually change.
+# =============================================================================
 
-# Install dependencies for building mbstring
-RUN apt-get update \
- && apt-get install -y --no-install-recommends unzip libonig-dev pkg-config \
- && docker-php-ext-configure mbstring \
- && docker-php-ext-install -j"$(nproc)" mbstring \
- && rm -rf /var/lib/apt/lists/*
+# Start from the official Node.js 20 image on Alpine Linux.
+# Alpine is a tiny Linux distro (~5 MB) — keeps the image small.
+# Node 20 is the current LTS (Long-Term Support) release.
+FROM node:20-alpine
 
-# Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-# Create Laravel project (no dev deps to keep it light)
+# Set the working directory inside the container.
+# All subsequent commands run from here, and the app files live here.
 WORKDIR /app
-ARG LARAVEL_VERSION="^11.0"
-RUN composer create-project --no-dev --prefer-dist laravel/laravel:"${LARAVEL_VERSION}" .
 
-# Copy local overrides (if any)
+# Copy ONLY the package files first.
+# This is a Docker caching best practice:
+#   If package.json hasn't changed, Docker reuses the cached npm install layer.
+#   If you copied everything first, any file change would bust the npm cache.
+COPY package*.json ./
+
+# Install only production dependencies (no dev tools like nodemon, jest, etc.)
+RUN npm ci --omit=dev
+
+# Now copy the rest of the app files.
+# This happens after npm install so changing source code doesn't re-run npm install.
 COPY . .
 
-# Optimize autoload and generate app key
-ENV APP_ENV=production
-RUN php artisan key:generate --ansi \
- && php artisan config:clear \
- && php artisan route:clear \
- && php artisan view:clear
-
-# ---- Runtime stage: slim PHP container serving /public on :8080 ----
-FROM php:8.2-cli
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Install only runtime deps needed for Laravel
-RUN apt-get update \
- && apt-get install -y --no-install-recommends unzip libonig-dev pkg-config \
- && docker-php-ext-configure mbstring \
- && docker-php-ext-install -j"$(nproc)" mbstring \
- && apt-get purge -y --auto-remove libonig-dev pkg-config \
- && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
-COPY --from=builder /app /app
-
-# Healthcheck (simple: ping the root)
-HEALTHCHECK --interval=30s --timeout=3s CMD php -r "try{ echo file_get_contents('http://127.0.0.1:8080')?0:1; }catch(Exception $e){ exit(1);}";
-
-# Laravel served by PHP's built-in server (fine for workshop demos)
+# Document that the app listens on port 8080.
+# This does NOT open the port — Docker Compose or Render handles that.
 EXPOSE 8080
-CMD ["php", "-S", "0.0.0.0:8080", "-t", "public", "public/index.php"]
+
+# The command that runs when the container starts.
+# "npm start" runs the "start" script in package.json → "node server.js"
+CMD ["npm", "start"]

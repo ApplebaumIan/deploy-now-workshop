@@ -1,8 +1,37 @@
-# compose.local.yml
-version: "3.8"
+# =============================================================================
+# DEPLOY NOW WORKSHOP — compose.local.yml
+# =============================================================================
+#
+# Docker Compose config for LOCAL DEVELOPMENT.
+# Uses the same Dockerfile as production (Render), so you get consistency:
+# "if it works here, it will work on Render."
+#
+# USAGE:
+#   Start:    docker compose -f compose.local.yml up --build
+#   Stop:     docker compose -f compose.local.yml down
+#   Logs:     docker compose -f compose.local.yml logs -f
+#   Rebuild:  docker compose -f compose.local.yml up --build
+#
+# After starting, open: http://localhost:8080
+# =============================================================================
+
 services:
   app:
+    # Build the Docker image from the Dockerfile in this directory.
+    # Use --build flag to force a rebuild after changing source files.
     build: .
+
+    # Port mapping: HOST:CONTAINER
+    #   Left  (8080) = port on YOUR laptop → visit http://localhost:8080
+    #   Right (8080) = port INSIDE the container (set by server.js)
+    # Change the left number if port 8080 is already in use on your machine.
     ports:
       - "8080:8080"
+
+    # Environment variables passed into the container.
+    # PORT tells server.js which port to listen on.
+    environment:
+      - PORT=8080
+
+    # Restart the container automatically if it crashes.
     restart: unless-stopped

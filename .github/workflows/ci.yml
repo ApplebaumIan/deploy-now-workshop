@@ -1,0 +1,98 @@
+# =============================================================================
+# DEPLOY NOW WORKSHOP — GitHub Actions CI/CD Workflow
+# =============================================================================
+#
+# This workflow is part of the ADVANCED / EXTENSION path.
+# It is NOT required for the basic workshop (Parts 1 & 2).
+#
+# WHAT IT DOES:
+#   On every push to main:
+#   1. Runs a basic Node.js smoke test (server starts and responds)
+#   2. Builds the Docker image to verify the Dockerfile is valid
+#
+# WHY THIS MATTERS:
+#   This is how real CI/CD pipelines work. Every code change is automatically
+#   built and checked before it reaches production.
+#
+# EXTENSION IDEAS:
+#   - Push the built image to GitHub Container Registry (GHCR)
+#   - Trigger a Render redeploy via their deploy hook URL
+#   - Add a linter (eslint) or test runner (jest/vitest)
+# =============================================================================
+
+name: CI — Build & Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Minimal permissions — this workflow only reads code.
+permissions:
+  contents: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Job 1: Node.js smoke test
+  # Installs dependencies and verifies the server starts and serves a page.
+  # ---------------------------------------------------------------------------
+  test:
+    name: Node.js Smoke Test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify server starts and responds
+        # Start the server, wait for it to be ready, then curl the homepage.
+        # npx wait-on is a small utility that polls until a URL is available.
+        run: |
+          npm start &
+          npx --yes wait-on http://localhost:8080 --timeout 15000
+          curl --fail --silent http://localhost:8080/ | grep -q "Deploy Now Workshop"
+        env:
+          PORT: 8080
+
+  # ---------------------------------------------------------------------------
+  # Job 2: Docker build verification
+  # Builds the Docker image to make sure the Dockerfile is valid.
+  # ---------------------------------------------------------------------------
+  docker-build:
+    name: Docker Build Verification
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Build the image but don't push it — just verify the Dockerfile works.
+      # Caching means subsequent runs are much faster.
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: deploy-now-workshop:latest
+
+      - name: Confirm image exists
+        run: docker images deploy-now-workshop:latest
