@@ -1,0 +1,102 @@
+# =============================================================================
+# DEPLOY NOW WORKSHOP — GitHub Actions CI/CD Workflow
+# =============================================================================
+#
+# This workflow is part of the ADVANCED / EXTENSION path.
+# It is NOT required for the basic workshop (Parts 1 & 2).
+#
+# WHAT IT DOES:
+#   On every push to the main branch:
+#   1. Runs the PHP test suite (if tests exist)
+#   2. Builds the Docker image to verify it builds successfully
+#
+# WHY THIS MATTERS:
+#   This is how real CI/CD pipelines work. Every code change is automatically
+#   built and tested before it reaches production. If the build breaks, the
+#   pipeline fails and you know before deploying.
+#
+# EXTENSION IDEAS:
+#   - Add a step to push the built image to GitHub Container Registry (GHCR)
+#   - Add a step to trigger a Render deploy via deploy hook
+#   - Add code style checks (PHP_CodeSniffer, PHP-CS-Fixer)
+#
+# DOCS:
+#   - GitHub Actions: https://docs.github.com/en/actions
+#   - GHCR: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry
+# =============================================================================
+
+name: CI — Build & Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Job 1: Run Tests
+  # ---------------------------------------------------------------------------
+  test:
+    name: PHP Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout your code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up PHP
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, sqlite3
+          coverage: none
+
+      # Step 3: Install PHP dependencies
+      - name: Install Composer dependencies
+        run: composer install --no-dev --prefer-dist --no-progress
+
+      # Step 4: Set up the test environment
+      - name: Copy .env for testing
+        run: cp .env.example .env
+
+      - name: Generate app key
+        run: php artisan key:generate
+
+      # Step 5: Run the test suite
+      - name: Run tests
+        run: php artisan test
+
+  # ---------------------------------------------------------------------------
+  # Job 2: Build Docker Image
+  # ---------------------------------------------------------------------------
+  docker-build:
+    name: Docker Build Verification
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout your code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Docker Buildx (for improved build caching)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Step 3: Build the Docker image (but don't push it)
+      # This verifies the Dockerfile is valid and the build succeeds.
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          # Cache layers between runs for faster builds
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: deploy-now-workshop:latest
+
+      # Step 4: Confirm the image was built successfully
+      - name: Verify image exists
+        run: docker images deploy-now-workshop:latest

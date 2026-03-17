@@ -1,0 +1,41 @@
+# =============================================================================
+# DEPLOY NOW WORKSHOP — render.yaml
+# =============================================================================
+#
+# This is a Render Blueprint file. It pre-configures your web service so you
+# don't have to fill in every field manually in the Render dashboard.
+#
+# HOW TO USE:
+#   In the Render dashboard, click "New → Blueprint" and connect this repo.
+#   Render will read this file and create the web service automatically.
+#
+# ALTERNATIVELY: You can ignore this file and configure Render manually
+#   using the settings in docs/FAST_PATH.md. Both approaches work.
+#
+# DOCS: https://render.com/docs/blueprint-spec
+# =============================================================================
+
+services:
+  - type: web
+    name: deploy-now-workshop
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+
+    # Deploy automatically when the main branch is pushed.
+    branch: main
+    autoDeploy: true
+
+    # Free tier — no credit card required.
+    plan: free
+
+    # Environment variables required for Laravel to run.
+    # APP_KEY must be set manually in the Render dashboard (it's a secret).
+    # Instructions: docs/FAST_PATH.md → Step 4 → Environment Variables
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_KEY
+        # You MUST set this in the Render dashboard.
+        # Generate with: php artisan key:generate --show
+        # Or ask your instructor for the pre-generated key.
+        sync: false

@@ -1,8 +1,31 @@
-# compose.local.yml
-version: "3.8"
+# =============================================================================
+# DEPLOY NOW WORKSHOP — compose.local.yml
+# =============================================================================
+#
+# This file is for LOCAL DEVELOPMENT only.
+# It uses the same Dockerfile as production (Render), so you get consistency:
+# "if it works here, it works on Render."
+#
+# Usage:
+#   Start:   docker compose -f compose.local.yml up --build
+#   Stop:    docker compose -f compose.local.yml down
+#   Logs:    docker compose -f compose.local.yml logs
+#
+# After starting, open: http://localhost:8080
+# =============================================================================
+
 services:
   app:
+    # Build the image from the Dockerfile in this directory.
+    # --build flag (in the run command) forces a rebuild when files change.
     build: .
+
+    # Port mapping: left side = your laptop, right side = inside the container.
+    # "8080:8080" means: traffic to localhost:8080 is forwarded to port 8080 in the container.
+    # Change the LEFT side if port 8080 is already in use on your machine.
     ports:
       - "8080:8080"
+
+    # Automatically restart the container if it crashes.
+    # "unless-stopped" means: restart unless you explicitly stop it with `docker compose down`.
     restart: unless-stopped
