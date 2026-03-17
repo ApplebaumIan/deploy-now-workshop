@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Deploy Now Workshop</title>
+    <style>
+        /* ----------------------------------------------------------------
+           Base styles — you don't need to edit this section for Parts 1-2.
+           ---------------------------------------------------------------- */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ================================================================
+           STUDENT EDIT ZONE styles
+           These styles control the big banner at the top of the page.
+           ✏️ You can change the background color, font size, etc.
+           ================================================================ */
+        .student-banner {
+            width: 100%;
+            padding: 2.5rem 1rem;
+            text-align: center;
+
+            /* ✏️ CHANGE THIS COLOR to personalize your deployment!
+               Try: #e11d48 (red), #16a34a (green), #9333ea (purple)  */
+            background: #3b82f6;
+
+            color: white;
+        }
+
+        .student-banner h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .student-banner .tagline {
+            font-size: 1.15rem;
+            opacity: 0.9;
+        }
+        /* ================================================================
+           END STUDENT EDIT ZONE styles
+           ================================================================ */
+
+        /* Workshop info below — no need to edit */
+        .content {
+            max-width: 680px;
+            width: 100%;
+            padding: 2rem 1rem;
+        }
+
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card h2 {
+            font-size: 0.85rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.75rem;
+        }
+
+        .card p, .card li { color: #cbd5e1; line-height: 1.7; }
+        .card ul { padding-left: 1.25rem; }
+        .card li { margin-bottom: 0.3rem; }
+
+        .badge {
+            display: inline-block;
+            background: #14532d;
+            color: #86efac;
+            border: 1px solid #16a34a;
+            border-radius: 9999px;
+            padding: 0.2rem 0.65rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+        }
+
+        .hint {
+            margin-top: 0.9rem;
+            background: #0f172a;
+            border: 2px dashed #475569;
+            border-radius: 0.5rem;
+            padding: 0.8rem 1rem;
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        code {
+            background: #1e293b;
+            padding: 0.15rem 0.4rem;
+            border-radius: 0.3rem;
+            font-family: 'Menlo', 'Consolas', monospace;
+            color: #fbbf24;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================================================================
+         👋 STUDENT EDIT ZONE — CHANGE THIS SECTION!
+
+         This is the ONLY section you need to edit for Parts 1 & 2.
+
+         HOW TO EDIT:
+           1. Replace "Your Name Here" with your actual name
+           2. Replace the tagline with something fun or personal
+           3. (Optional) Change the banner background color in the
+              <style> section above — look for "CHANGE THIS COLOR"
+           4. Save → commit → push → watch Render auto-redeploy!
+
+         FILE: public/index.html   ← you are editing this file right now
+         ================================================================ -->
+
+    <div class="student-banner">
+        <h1>👋 Hello from <strong>Your Name Here</strong>!</h1>
+        <p class="tagline">✏️ Edit <code style="background:rgba(0,0,0,0.25);color:#fff;">public/index.html</code> and push to make this yours.</p>
+    </div>
+
+    <!-- ================================================================
+         END OF STUDENT EDIT ZONE
+         You don't need to edit anything below this line for Parts 1 & 2.
+         ================================================================ -->
+
+    <div class="content">
+
+        <div class="card">
+            <span class="badge">✅ Deployed Successfully</span>
+            <h2>Your App is Live</h2>
+            <p>If you can read this, your deployment worked. This page is being served by a Node.js + Express app running inside a Docker container.</p>
+            <div class="hint">
+                💡 <strong>Next:</strong> Edit <code>public/index.html</code>, change the name above,
+                then push to GitHub. Render will redeploy automatically.
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>What Just Happened?</h2>
+            <ul>
+                <li>You forked a GitHub repo that includes a <code>Dockerfile</code></li>
+                <li>Render detected the Dockerfile and built a container image</li>
+                <li>Render started the container and gave it a public URL</li>
+                <li>Every <code>git push</code> to <code>main</code> triggers a new deploy</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>Workshop Progress</h2>
+            <ul>
+                <li><strong>Part 1 ✅</strong> — Fast Deploy: you're here!</li>
+                <li><strong>Part 2</strong> — Iteration: edit this file and push</li>
+                <li><strong>Part 3 (Lab)</strong> — Docker: run this locally with <code>docker compose</code></li>
+            </ul>
+        </div>
+
+    </div>
+
+</body>
+</html>

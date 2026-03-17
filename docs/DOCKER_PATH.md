@@ -1,24 +1,24 @@
 # 🐳 Docker Path — Part 3
 
-> **This is the advanced lab section.** You should have already completed Parts 1 and 2 (deployed to Render and made a visible change).
+> **This is the advanced lab section.** Complete Parts 1 and 2 first (deploy to Render, make a change).
 >
-> Goal: Run the app locally in Docker, understand how containers work, and connect this to your own projects.
+> **Goal:** Run the app locally in Docker, understand how containers work, and connect this knowledge to your own projects.
 
 ---
 
 ## Why Docker?
 
-You've already deployed this app to Render. Render used your `Dockerfile` to build and run the app.
+You already deployed this app to Render. Render used your `Dockerfile` to build and run it.
 
 But what if you want to:
-- Run it on your laptop for development?
-- Deploy to a different platform (AWS, GCP, DigitalOcean)?
-- Share an exact copy of the app with someone else?
+- Run the app on your laptop during development?
+- Deploy to a different platform (AWS, GCP, DigitalOcean, Fly.io)?
+- Share an exact working copy of the app with a teammate?
 - Test changes before pushing to production?
 
-Docker solves all of these by packaging the app and its dependencies into a **container** — a portable, reproducible environment.
+Docker solves all of these by packaging the app and its dependencies into a **container** — a portable, reproducible environment that runs the same everywhere.
 
-**Key idea:** The same `Dockerfile` that Render used to build your production app is also used here to run it locally. Consistency across environments.
+**Key idea:** The same `Dockerfile` that Render used to build your production app is what you'll use here to run it locally. This is *environment consistency* — the whole point of containers.
 
 ---
 
@@ -30,22 +30,22 @@ Docker solves all of these by packaging the app and its dependencies into a **co
 - **Windows:** [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop) (requires WSL2)
 - **Linux:** `sudo apt-get install docker.io docker-compose-plugin`
 
-Verify it's installed:
+Verify the install:
 ```bash
 docker --version
 docker compose version
 ```
 
-### Option: Use GitHub Codespaces
+### Alternative: GitHub Codespaces
 
-If you'd rather not install Docker locally, open your fork in GitHub Codespaces:
-1. Click the **Code** button on your repo
-2. Click **Codespaces** → **Create codespace on main**
-3. The `.devcontainer` config sets up PHP and Node for you
+Don't want to install Docker locally? Open your fork in Codespaces:
+1. Click the **Code** button on your repo page
+2. Click **Codespaces → Create codespace on main**
+3. The `.devcontainer` config already includes Docker-in-Docker support
 
 ---
 
-## Step 1 — Clone Your Fork (if not already done)
+## Step 1 — Clone Your Fork
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/deploy-now-workshop.git
@@ -54,48 +54,37 @@ cd deploy-now-workshop
 
 ---
 
-## Step 2 — Understand the Files
+## Step 2 — Understand the Files Before Running
 
-Before running anything, look at the two key files:
+Open these two files and read the comments before running anything.
 
-### `Dockerfile` (the recipe)
+### `Dockerfile`
 
-```
-Open: Dockerfile
-```
+This is the **recipe** for building the container image. Notice:
 
-Notice the **two-stage build pattern**:
-
+**Layer caching (the key optimization):**
 ```dockerfile
-# Stage 1: BUILD
-# - Install PHP, Composer, and all dependencies
-# - Run artisan commands to optimize the app
-FROM php:8.2-cli AS builder
-...
+# Copy package files FIRST
+COPY package*.json ./
+RUN npm ci --omit=dev
 
-# Stage 2: RUNTIME
-# - Start fresh with a minimal base image
-# - Copy ONLY the built app from Stage 1
-# - This keeps the final image small and clean
-FROM php:8.2-cli
-...
+# THEN copy the rest of the app
+COPY . .
 ```
+Why this order? Docker caches each layer. If `package.json` hasn't changed, Docker skips the `npm ci` step entirely on the next build. If you copied everything first, ANY file change would bust the npm cache and re-run install.
 
-**Why two stages?**
-- The build stage needs lots of tools (Composer, dev dependencies)
-- The runtime stage only needs what's necessary to run the app
-- This results in a smaller, more secure production image
-
-### `compose.local.yml` (the local runner)
-
+**The final command:**
+```dockerfile
+CMD ["npm", "start"]
 ```
-Open: compose.local.yml
-```
+This is what runs when the container starts. It maps to `node server.js` via the `start` script in `package.json`.
 
-This file tells Docker Compose:
-- Build the image from the local `Dockerfile`
-- Map port `8080` on your laptop to port `8080` in the container
-- Restart automatically if the container crashes
+### `compose.local.yml`
+
+This tells Docker Compose how to run the image locally:
+- `build: .` — build from the local Dockerfile
+- `ports: "8080:8080"` — forward your laptop's port 8080 to the container's port 8080
+- `environment: PORT=8080` — tell the app which port to listen on
 
 ---
 
@@ -106,176 +95,163 @@ docker compose -f compose.local.yml up --build
 ```
 
 What happens:
-1. Docker reads the `Dockerfile` and builds an image (~2–4 minutes first time)
+1. Docker reads the `Dockerfile` and builds an image (~1–2 min, faster on rebuilds)
 2. Docker starts a container from that image
 3. The app starts serving on port 8080
 
-You'll see output like:
+You'll see output ending with:
 ```
-[+] Building 45.2s (15/15) FINISHED
-[+] Running 1/1
- ✔ Container deploy-now-workshop-app-1  Started
+app-1  | Workshop app running → http://localhost:8080
 ```
 
 ---
 
 ## Step 4 — Open the App
 
-Visit: [http://localhost:8080](http://localhost:8080)
+Visit: **[http://localhost:8080](http://localhost:8080)**
 
 You should see the same welcome page you deployed to Render. **Same app. Same container. Different environment.**
 
 ---
 
-## Step 5 — Make a Change and Rebuild
+## Step 5 — Make a Change and See It Locally
 
-1. Edit `resources/views/welcome.blade.php` (change something in the STUDENT EDIT ZONE)
+1. Edit `public/index.html` (change the name or color)
 2. Stop the running containers: `Ctrl+C`
 3. Rebuild and restart:
+   ```bash
+   docker compose -f compose.local.yml up --build
+   ```
+4. Refresh [http://localhost:8080](http://localhost:8080)
 
-```bash
-docker compose -f compose.local.yml up --build
-```
-
-4. Refresh [http://localhost:8080](http://localhost:8080) — your change is reflected
-
-> **Notice:** You have to rebuild to see changes. This is because the files are copied into the image at build time, not mounted from your local filesystem. In a real development setup, you'd typically mount a volume so changes appear live without rebuilding.
+> **Why do you have to rebuild?** The files are copied into the image at build time. To see changes, you need a new image. (In a real dev setup you'd mount a volume so changes appear live — see Challenge 2 below.)
 
 ---
 
 ## Step 6 — Explore the Running Container
 
-While the app is running (in a separate terminal tab):
+While the app is running, open a **new terminal tab** and try:
 
-**List running containers:**
 ```bash
+# List all running containers
 docker ps
-```
 
-**Look inside the container:**
-```bash
-docker exec -it deploy-now-workshop-app-1 /bin/bash
-# Now you're inside the container!
-ls /app          # your app files are here
-exit             # back to your terminal
-```
+# Open a shell inside the container
+docker exec -it deploy-now-workshop-app-1 sh
+ls /app              # your app files are here
+cat /app/server.js   # view server.js from inside the container
+exit
 
-**View container logs:**
-```bash
-docker compose -f compose.local.yml logs
-```
+# View the container's logs
+docker compose -f compose.local.yml logs -f
 
-**Stop everything:**
-```bash
+# Stop all containers defined in this file
 docker compose -f compose.local.yml down
 ```
 
 ---
 
-## Step 7 — Understand the Deployment Story
+## Step 7 — The Full Deployment Picture
 
-Here's how the local Docker setup connects to your Render deployment:
+Here's how your local Docker setup maps to Render:
 
 ```
-Local (your laptop)                    Production (Render)
-──────────────────                     ─────────────────────
-docker compose up --build              git push → Render builds
+Your Laptop                            Render (Production)
+───────────────                        ───────────────────────
+docker compose up --build              git push → Render webhook fires
         ↓                                      ↓
 Reads Dockerfile                       Reads same Dockerfile
         ↓                                      ↓
-Builds image                           Builds image
+npm ci --omit=dev                      npm ci --omit=dev
         ↓                                      ↓
-Runs container                         Runs container
+Starts container                       Starts container
         ↓                                      ↓
 http://localhost:8080                  https://yourapp.onrender.com
 ```
 
-**Same Dockerfile. Same process. Different infrastructure.**
-
-This is the power of containers — you know the app works locally because it will work the same way in production.
+**Same Dockerfile. Same process. Different infrastructure.** That's why containers matter.
 
 ---
 
-## Step 8 — Understanding Environment Variables
+## Key Concepts
 
-Notice how the app behavior changes based on environment variables:
+### Image vs Container
 
-| Variable | Development | Production |
-|----------|-------------|------------|
-| `APP_ENV` | `local` | `production` |
-| `APP_DEBUG` | `true` | `false` |
-| `APP_KEY` | Generated at build time | Set in Render env vars |
+| Concept | Analogy | In practice |
+|---------|---------|-------------|
+| **Image** | A recipe / blueprint | Built from Dockerfile, stored on disk |
+| **Container** | A running meal / result | A live process from the image |
 
-In the `Dockerfile`, the app key is generated during build:
-```dockerfile
-RUN php artisan key:generate --ansi
-```
+You can run many containers from one image.
 
-In Render (production), you set `APP_KEY` explicitly as an environment variable. This is a security best practice — secrets should not be baked into images.
+### Layer Caching
 
----
-
-## 🔑 Key Concepts to Understand
-
-### Docker Image vs Container
-
-- **Image**: The recipe/blueprint (built from Dockerfile, stored on disk)
-- **Container**: A running instance of an image (like a process)
-- You can run many containers from one image
-
-### Multi-Stage Builds
-
-- Stage 1 ("builder"): Install everything needed to compile/build the app
-- Stage 2 ("runtime"): Copy only the final output into a clean image
-- Result: Smaller, faster, more secure production image
+Every `RUN`, `COPY`, and `ADD` in a Dockerfile creates a cached layer. Docker only re-runs a layer when that layer (or something above it) changes. This is why ordering matters.
 
 ### Port Mapping
 
 ```
-Port 8080 on your laptop → Port 8080 inside the container
-   (host port)                   (container port)
+8080:8080
+ │      └── port INSIDE the container (what server.js listens on)
+ └───────── port on YOUR LAPTOP (what you visit in the browser)
 ```
 
-Change `8080:8080` in `compose.local.yml` to use a different host port.
+Change the left number to use a different local port.
 
 ### Environment Variables
 
-- Never hardcode secrets in your Dockerfile
-- Use environment variables for: API keys, database passwords, app keys
-- Render, AWS, and all major platforms support env vars
+The app reads `PORT` from the environment:
+```javascript
+const PORT = process.env.PORT || 8080;
+```
+Render sets `PORT` automatically. Docker Compose sets it in `compose.local.yml`. The code doesn't care — it just reads the variable.
 
 ---
 
 ## Extension Challenges
 
-### Challenge 1 — Smaller Image
+### Challenge 1 — Volume Mount (Live Reload)
 
-The current Dockerfile's runtime stage still installs `unzip libonig-dev pkg-config`. Can you remove unnecessary packages from the runtime stage and verify the app still runs?
-
-### Challenge 2 — Volume Mounting
-
-Instead of rebuilding every time you change a file, add a volume mount in `compose.local.yml`:
+Add a volume mount so HTML changes appear without rebuilding:
 
 ```yaml
+# In compose.local.yml, under the app service:
 volumes:
-  - ./resources:/app/resources
+  - ./public:/app/public
 ```
 
-Now changes to view files appear without rebuilding. (Note: PHP files are served directly, but a cache clear may be needed.)
+Now edit `public/index.html` and refresh the browser — no rebuild needed. Why does this work for HTML but not for `server.js`?
 
-### Challenge 3 — Multi-Container
+### Challenge 2 — Smaller Image
 
-Add a database service to `compose.local.yml`. SQLite works for this workshop, but real apps need PostgreSQL or MySQL. What would that `compose.local.yml` look like?
+The current image uses `node:20-alpine`. Alpine Linux is already tiny (~5 MB base). But can you reduce the image size further by removing something that isn't needed at runtime?
+
+Check the current size:
+```bash
+docker images deploy-now-workshop
+```
+
+### Challenge 3 — Add an API Endpoint
+
+Edit `server.js` to add a new route:
+```javascript
+app.get('/api/hello', (req, res) => {
+  res.json({ message: 'Hello from the API!', timestamp: new Date() });
+});
+```
+
+Rebuild and visit [http://localhost:8080/api/hello](http://localhost:8080/api/hello). How would you display this data on the HTML page?
 
 ### Challenge 4 — Apply to Your Own Project
 
 Think about your current class project:
 1. What language/runtime does it use?
-2. What base Docker image would you use? (Check [hub.docker.com](https://hub.docker.com))
-3. What commands does it need to install dependencies and start the server?
-4. What environment variables does it need?
+2. What base image would you use? ([hub.docker.com](https://hub.docker.com) — search for your language)
+3. What commands install its dependencies?
+4. What command starts the server?
+5. What port does it use?
 
-Draft a `Dockerfile` for your own project.
+Draft a `Dockerfile` for it using the same structure as this one.
 
 ---
 
@@ -283,9 +259,9 @@ Draft a `Dockerfile` for your own project.
 
 | Symptom | Fix |
 |---------|-----|
-| `docker: command not found` | Docker not installed or not in PATH |
-| Port 8080 already in use | Run `lsof -i :8080` to find what's using it, or change the port in compose.local.yml |
-| Build fails with permission error | Try `sudo docker compose up` (Linux) or restart Docker Desktop |
-| App shows 500 error locally | Check that `APP_KEY` is set; the Dockerfile generates one at build time |
+| `docker: command not found` | Docker Desktop is not installed or not running |
+| `Cannot connect to the Docker daemon` | Open Docker Desktop and wait for it to show "running" |
+| Port 8080 already in use | Change `8080:8080` → `8081:8080` in `compose.local.yml`, visit `localhost:8081` |
 | Container exits immediately | Run `docker compose -f compose.local.yml logs` to see the error |
-| Changes not appearing | Make sure you rebuilt: `docker compose -f compose.local.yml up --build` |
+| Changes not appearing | Rebuild: `docker compose -f compose.local.yml up --build` |
+| Build is very slow | First build downloads the base image — subsequent builds use the cache |

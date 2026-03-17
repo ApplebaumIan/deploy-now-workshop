@@ -1,23 +1,34 @@
 {
-  "name": "Owlhacks Deploy Now Workshop",
-  "build": {
-    "dockerfile": "Dockerfile"
-  },
-  "features": {
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "20"
+  "name": "Deploy Now Workshop",
+  // Use the official Node.js 20 devcontainer image.
+  // This gives you Node, npm, and Git out of the box — nothing extra needed.
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+
+  // Forward these ports to your browser when using Codespaces or VS Code.
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": {
+      "label": "Workshop App",
+      "onAutoForward": "openPreview"
     }
   },
-  "forwardPorts": [3000, 5173, 8000, 8080, 80],
-  "portsAttributes": {
-    "5173": {
-      "label": "Vite Dev Server"
-    },
-    "3000": {
-      "label": "Node.js App"
-    },
-    "8000": {
-      "label": "PHP Dev Server"
+
+  // Install the Docker-in-Docker feature so you can run Docker commands
+  // inside the devcontainer (needed for Part 3 — Docker path).
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+
+  // Automatically install npm dependencies when the container starts.
+  "postCreateCommand": "npm install",
+
+  // Recommended VS Code extensions for this workshop.
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "ms-azuretools.vscode-docker"
+      ]
     }
   }
 }
