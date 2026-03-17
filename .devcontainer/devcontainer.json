@@ -19,6 +19,10 @@
     "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
 
+  // Docker-in-Docker requires privileged mode so the Docker daemon can start
+  // inside the container (needed to create network interfaces and mount filesystems).
+  "privileged": true,
+
   // Automatically install npm dependencies when the container starts.
   "postCreateCommand": "npm install",
 
