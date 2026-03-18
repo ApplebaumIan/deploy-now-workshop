@@ -1,181 +1,353 @@
 # 🚀 Deploy Now Workshop
 
-> **A hands-on deployment workshop.** You'll go from "just forked this repo" to a live URL in a browser in under 50 minutes — then learn how Docker makes that deployment reproducible and portable.
+> Deploy a real app to the internet. Make a change. Watch it update. Then learn how it works.
+
+👉 **If you finish Part 1, you've done the most important thing today.**
 
 ---
 
-## 📋 Why This Workshop Exists
+## 🎯 What You'll Do
 
-Deployment is one of the most important skills in software development, but it's often skipped or saved for "later." This workshop puts deployment **first**:
-
-1. You get a **real, live URL** early
-2. You make a change and watch it **auto-redeploy**
-3. You learn how **Docker** makes deployments consistent across environments
-
-The app itself is a tiny Node.js + Express server that serves a single HTML page.
-You'll never need to understand Express to complete Parts 1 and 2 — just edit HTML.
+| Part | When | Goal |
+|------|------|------|
+| **Part 1 — Deploy** | First ~20 min | Your app is live at a public URL |
+| **Part 2 — Iterate** | Next ~30 min | You make a change and watch it redeploy |
+| **Part 3 — Docker** | Lab (1h 50m) | You run it locally and understand how it works |
 
 ---
 
-## 🎯 What You'll Accomplish
+## 🟢 Part 1 — Get It Live
 
-| Phase | Time | Goal |
-|-------|------|------|
-| **Part 1 – Fast Deploy** | First 30 min of class | Your app is live at a public URL |
-| **Part 2 – Iteration** | Last 20 min of class | You edit a file and watch it auto-redeploy |
-| **Part 3 – Docker Path** | Lab (1h 50m) | You run the app locally in Docker and understand how containers work |
+### Step 1 — Fork this repo
+
+Click **Fork** (top-right of this page) → accept defaults → **Create fork**.
+
+You now have your own copy at `github.com/YOUR_USERNAME/deploy-now-workshop`.
 
 ---
 
-## ✅ Part 1 — Fast Deploy (Required)
+### Step 2 — Create a Render account
 
-> **Goal:** Get your app live at a public URL before the 50-minute class ends.
->
-> 📄 Full step-by-step: [docs/FAST_PATH.md](docs/FAST_PATH.md)
+Go to [render.com](https://render.com) and sign up with GitHub. Free tier works fine.
 
-### Quick Steps
+---
 
-**1 — Fork this repo**
-
-Click the **Fork** button (top-right of this page). This creates your own copy.
-
-**2 — Create a Render account**
-
-Go to [render.com](https://render.com) and sign up with GitHub (free tier available — check render.com for current account requirements).
-
-**3 — Create a New Web Service**
+### Step 3 — Create a Web Service
 
 In the Render dashboard: **New + → Web Service → connect your fork**
 
-**4 — Configure the service**
+Configure it:
 
 | Setting | Value |
 |---------|-------|
-| Runtime | **Docker** |
+| Name | `yourname-deploy-workshop` |
 | Branch | `main` |
+| Runtime | **Docker** |
 | Instance Type | **Free** |
 
-No environment variables are required for this app. Click **Create Web Service**.
-
-**5 — Wait for the deploy**
-
-Watch the build log. When you see "Your service is live 🎉", click the URL.
-
-### ✅ Part 1 Checkpoint
-
-> Your app is live at `https://your-app.onrender.com`. You can see the welcome page.
+No environment variables needed. Click **Create Web Service**.
 
 ---
 
-## 🔄 Part 2 — Iteration (Required)
+### Step 4 — Wait for the deploy
 
-> **Goal:** Make a visible change and watch it auto-redeploy.
+Watch the build log. When you see:
 
-**1 — Open `public/index.html`**
+```
+==> Your service is live 🎉
+```
 
-This is the only file you need to edit. Open it in your editor or directly on GitHub.
+Click the URL at the top of the page.
+
+---
+
+### ✅ Part 1 Checkpoint
+
+> You can see the welcome page at `https://yourname-deploy-workshop.onrender.com`.
+>
+> Share your URL with a neighbor.
+
+---
+
+## 🔄 Part 2 — Make It Yours
+
+### Step 1 — Edit `public/index.html`
+
+Open it in your editor or directly on GitHub (click the pencil icon).
 
 Find the clearly marked section:
 
 ```html
 <!-- ================================================================
      👋 STUDENT EDIT ZONE — CHANGE THIS SECTION!
-     ...
      ================================================================ -->
 ```
 
-**2 — Change your name and tagline**
+---
+
+### Step 2 — Change your name and message
 
 ```html
 <h1>👋 Hello from <strong>Ada Lovelace</strong>!</h1>
-<p class="tagline">I just deployed something! 🚀</p>
+<p class="tagline">I just deployed something real! 🚀</p>
 ```
 
-You can also change the banner color — look for `/* ✏️ CHANGE THIS COLOR */` in the `<style>` block.
+**Bonus:** Change the banner color. Find this in the `<style>` block:
 
-**3 — Commit and push**
+```css
+/* ✏️ CHANGE THIS COLOR */
+background: #3b82f6;
+```
 
+Try: `#e11d48` (red) · `#16a34a` (green) · `#9333ea` (purple)
+
+---
+
+### Step 3 — Commit and push
+
+**On GitHub (easiest):** scroll down, write a commit message, click **Commit changes**.
+
+**Locally:**
 ```bash
 git add public/index.html
 git commit -m "feat: update welcome message"
-git push
+git push origin main
 ```
 
-Or use the GitHub web editor (pencil icon on the file page).
+---
 
-**4 — Watch Render redeploy**
+### Step 4 — Watch Render redeploy
 
-Render detects the push automatically and starts a new build. When it finishes (~1–2 min), refresh your URL.
+Go to your Render dashboard. A new deploy starts automatically when Render detects your push. Wait ~1–2 minutes, then refresh your URL.
+
+---
 
 ### ✅ Part 2 Checkpoint
 
-> Your name is live at your Render URL. Auto-deploy works.
+> Your name is live on your public URL.
+>
+> Every `git push` to `main` → Render rebuilds and redeploys. That's the loop.
 
 ---
 
-## Part 3 — Advanced Docker Path (Lab)
+## 🧠 What Just Happened?
 
-> **Goal:** Run the app locally in Docker, understand the Dockerfile, connect this to your own projects.
->
-> 📄 Full step-by-step: [docs/DOCKER_PATH.md](docs/DOCKER_PATH.md)
+Here's the full picture of what ran automatically:
+
+```mermaid
+graph TD
+A["You edited public/index.html"]-->
+
+B["You pushed to GitHub"]-->
+           
+C["Render detected the push (webhook)"]-->
+           
+D["Render rebuilt the app from your code"]-->
+           
+E["Render restarted it at your public URL"]
+```
+
+This push → build → deploy pattern is how production apps work at every scale.
+
+You didn't need to understand this to deploy. But now you do.
+
+---
+
+## ⚫ Part 3 — How This Actually Works (Lab)
+
+> Complete Parts 1 and 2 before starting this section.
+
+In Parts 1 and 2, Render built and ran your app automatically.
+What it actually did was read the `Dockerfile` in this repo and run your app inside a **container**.
+
+**Docker** packages your app and its dependencies into a portable environment that runs the same everywhere — your laptop, Render, AWS, anywhere.
+
+That's why it worked the first time without any configuration.
+
+---
 
 ### Prerequisites
 
-- Docker Desktop: [docker.com/get-started](https://www.docker.com/get-started)
-- Or use GitHub Codespaces (`.devcontainer` is already configured)
+Install **Docker Desktop**: [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop)
 
-### Quick Steps
-
+Verify:
 ```bash
-# Clone your fork
-git clone https://github.com/YOUR_USERNAME/deploy-now-workshop.git
-cd deploy-now-workshop
-
-# Build and start the container
-docker compose -f compose.local.yml up --build
-
-# Open in browser
-open http://localhost:8080
+docker --version
+docker compose version
 ```
 
-Read the `Dockerfile` — it's heavily commented and explains every decision.
-
-### ✅ Part 3 Checkpoint
-
-> Your app runs in Docker locally. You understand the two key ideas:
-> 1. The same Dockerfile runs everywhere (local, Render, AWS, etc.)
-> 2. Docker caches layers — changing code doesn't re-install dependencies
+**Don't want to install locally?** Open your fork in GitHub Codespaces instead (`.devcontainer` is already configured).
 
 ---
 
-## 🔧 Common Issues
+### Step 1 — Clone your fork
 
-### "Deploy failed on Render"
+```bash
+git clone https://github.com/YOUR_USERNAME/deploy-now-workshop.git
+cd deploy-now-workshop
+```
 
-Check the **Deploy Logs** in Render for the specific error. Common causes:
-- Dockerfile syntax error (look for the failing line in the log)
-- Port mismatch (server.js uses `PORT` env var, Render sets it automatically)
+---
 
-### "I pushed but Render didn't redeploy"
+### Step 2 — Read the Dockerfile before running it
 
-- Make sure you pushed to the `main` branch
-- Check Render dashboard → your service → "Auto-Deploy" is enabled
-- Hard-refresh: `Ctrl+Shift+R` / `Cmd+Shift+R`
+Open `Dockerfile`. Notice the order:
 
-### "My change isn't showing up"
+```dockerfile
+# Copy package files FIRST
+COPY package*.json ./
+RUN npm ci --omit=dev
 
-- Did you edit `public/index.html` (not another file)?
-- Did you commit and push? (`git status` should show nothing pending)
-- Is the Render deploy complete? (Check the dashboard)
+# THEN copy the rest of the app
+COPY . .
+```
 
-### "Docker Compose fails locally"
+**Why this order?** Docker caches each step. If `package.json` hasn't changed, Docker skips `npm install` entirely on the next build. Copying everything first would bust that cache on every change.
 
-- Make sure Docker Desktop is running (check your taskbar/menu bar)
-- Run `docker compose -f compose.local.yml down` first, then `up --build`
-- Port conflict: change `8080:8080` to `8081:8080` in `compose.local.yml`
+---
 
-### "Render free tier is very slow"
+### Step 3 — Build and run locally
 
-- Free tier instances sleep after 15 minutes of inactivity
-- First request after sleep takes 30–60 seconds — that's normal
-- Tell students to expect this; it's not broken
+```bash
+docker compose -f compose.local.yml up --build
+```
+
+This builds an image from the Dockerfile and starts a container. When you see:
+
+```
+app-1  | Workshop app running → http://localhost:8080
+```
+
+Open [http://localhost:8080](http://localhost:8080).
+
+**Same app. Same container image. Running locally instead of on Render.**
+
+---
+
+### Step 4 — Explore the running container
+
+Open a new terminal tab while the app is running:
+
+```bash
+# List running containers
+docker ps
+
+# Open a shell inside the container
+docker exec -it deploy-now-workshop-app-1 sh
+ls /app
+cat /app/server.js
+exit
+
+# View logs
+docker compose -f compose.local.yml logs -f
+
+# Stop everything
+docker compose -f compose.local.yml down
+```
+
+---
+
+### Step 5 — Make a change and rebuild
+
+1. Edit `public/index.html`
+2. Stop the container: `Ctrl+C`
+3. Rebuild and restart:
+   ```bash
+   docker compose -f compose.local.yml up --build
+   ```
+4. Refresh [http://localhost:8080](http://localhost:8080)
+
+> Files are copied into the image at build time, so you need to rebuild to see changes. In a real dev workflow you'd mount a volume (see Challenge 1 below).
+
+---
+
+### ✅ Part 3 Checkpoint
+
+> Your app runs in Docker locally. You understand:
+> 1. The same `Dockerfile` ran on Render in production and runs here locally
+> 2. Layer caching means rebuilds are fast when only your code changes
+
+---
+
+### How local maps to production
+
+```mermaid
+flowchart TD
+    subgraph Laptop["Your Laptop"]
+        A["docker compose up --build"]
+        B["Reads Dockerfile"]
+        C["npm ci --omit=dev"]
+        D["Starts container"]
+        E["http://localhost:8080"]
+        F["git push → Render webhook"]
+
+        A --> B --> C --> D --> E
+    end
+
+    subgraph Render["Render (Production)"]
+        G["Reads same Dockerfile"]
+        H["npm ci --omit=dev"]
+        I["Starts container"]
+        J["https://yourapp.onrender.com"]
+        
+        F --> G --> H --> I --> J
+    end
+
+    
+```
+
+Same Dockerfile. Same process. Different infrastructure. That's the point of containers.
+
+---
+
+### Key concepts
+
+**Image vs Container**
+
+| Concept | Analogy | In practice |
+|---------|---------|-------------|
+| **Image** | A recipe | Built from Dockerfile, stored on disk |
+| **Container** | The meal | A live running process from the image |
+
+**Port mapping** — `8080:8080` means "forward port 8080 on your laptop to port 8080 inside the container."
+
+**Environment variables** — the app reads `PORT` from the environment. Render sets it automatically. Docker Compose sets it in `compose.local.yml`. The code doesn't care where it comes from.
+
+---
+
+### Extension challenges
+
+**Challenge 1 — Volume mount (live reload)**
+
+Add this to `compose.local.yml` under the app service so HTML changes appear without rebuilding:
+```yaml
+volumes:
+  - ./public:/app/public
+```
+
+**Challenge 2 — Add a new page**
+
+Add a new HTML file to `public/` and link to it from `index.html`. Push and watch it deploy.
+
+**Challenge 3 — Add an API route**
+
+Open `server.js` and add a new Express route that returns JSON. Test it at `/api/your-route`.
+
+---
+
+## 🔧 Troubleshooting
+
+**Deploy failed on Render**
+Check the Deploy Logs in Render. Common causes: Dockerfile syntax error (the log shows the line), or a missing dependency.
+
+**I pushed but Render didn't redeploy**
+Make sure you pushed to `main`. Check Render dashboard → your service → **Auto-Deploy** is enabled.
+
+**My change isn't showing up**
+Did you edit `public/index.html`? Did you push? Run `git status` — it should show nothing pending. Check that the Render deploy finished.
+
+**Docker Compose fails locally**
+Make sure Docker Desktop is running. Run `docker compose -f compose.local.yml down` first, then `up --build`. Port conflict? Change `8080:8080` to `8081:8080` in `compose.local.yml`.
+
+**The site takes forever to load**
+Free Render instances sleep after 15 minutes idle. The first request wakes it up — expect 30–60 seconds. It's not broken.
