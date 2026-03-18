@@ -42,33 +42,6 @@ You'll never need to understand Express to complete Parts 1 and 2 — just edit 
 
 > **Stuck?** See [Common Issues](#-common-issues) below or ask the instructor.
 
----
-
-## ⏱️ Class Schedule
-
-### In-Class (50 minutes)
-
-| Time | Activity |
-|------|----------|
-| 0:00 – 0:05 | Overview: what is deployment? why does it matter? |
-| 0:05 – 0:15 | Fork this repo, create a Render account |
-| 0:15 – 0:30 | Connect repo to Render, trigger first deploy |
-| 0:30 – 0:35 | ✅ Checkpoint: everyone opens their live URL |
-| 0:35 – 0:45 | Edit `public/index.html`, push, watch auto-redeploy |
-| 0:45 – 0:50 | ✅ Checkpoint: everyone sees their change live |
-
-### Lab (1 hour 50 minutes)
-
-| Time | Activity |
-|------|----------|
-| 0:00 – 0:15 | Review: what just happened? What is a web server? |
-| 0:15 – 0:45 | Part 3: Run the app locally with Docker |
-| 0:45 – 1:10 | Read the Dockerfile — understand layers, images, containers |
-| 1:10 – 1:40 | Extension: apply Docker thinking to your own project |
-| 1:40 – 1:50 | Wrap-up and Q&A |
-
----
-
 ## ✅ Part 1 — Fast Deploy (Required)
 
 > **Goal:** Get your app live at a public URL before the 50-minute class ends.
@@ -155,7 +128,7 @@ Render detects the push automatically and starts a new build. When it finishes (
 
 ---
 
-## �� Part 3 — Advanced Docker Path (Lab)
+## Part 3 — Advanced Docker Path (Lab)
 
 > **Goal:** Run the app locally in Docker, understand the Dockerfile, connect this to your own projects.
 >
@@ -221,55 +194,3 @@ Check the **Deploy Logs** in Render for the specific error. Common causes:
 - Free tier instances sleep after 15 minutes of inactivity
 - First request after sleep takes 30–60 seconds — that's normal
 - Tell students to expect this; it's not broken
-
----
-
-## 👩‍🏫 Instructor Notes
-
-> Full guide: [docs/INSTRUCTOR_NOTES.md](docs/INSTRUCTOR_NOTES.md)
-
-**Pre-class essentials:**
-- [ ] Do a dry run — fork, deploy to Render, confirm it works
-- [ ] Have the live URL open on the projector at the start of class
-- [ ] No secrets or pre-assigned values needed — each student deploys independently
-
-**The key demo move:** Open `public/index.html` on GitHub, edit it in the browser, commit, then switch to the Render dashboard and show the build log starting. Students find this very satisfying.
-
----
-
-## 🧩 Extension Ideas
-
-For students who finish early:
-
-- **New page:** Add `public/about.html` and link to it from `index.html`
-- **New route:** Edit `server.js` to add an API endpoint (e.g., `/api/hello`)
-- **Environment variable:** Add a `GREETING` env var in Render and display it on the page
-- **GitHub Actions:** The included `.github/workflows/ci.yml` is already set up — push something and watch it run
-- **Adapt for your project:** Draft a `Dockerfile` for your own class project
-
----
-
-## 📁 Repository Structure
-
-```
-deploy-now-workshop/
-├── README.md                    # This file — workshop overview
-├── server.js                    # Tiny Express server (serves /public)
-├── package.json                 # Node.js dependencies (just Express)
-├── Dockerfile                   # Container image definition (annotated)
-├── compose.local.yml            # Local Docker Compose config (annotated)
-├── render.yaml                  # Render deployment blueprint (optional)
-├── public/
-│   └── index.html               # ← STUDENTS EDIT THIS FILE FIRST
-├── docs/
-│   ├── FAST_PATH.md             # Detailed Part 1 & 2 walkthrough
-│   ├── DOCKER_PATH.md           # Detailed Part 3 Docker walkthrough
-│   └── INSTRUCTOR_NOTES.md     # Facilitator guide
-└── .github/
-    └── workflows/
-        └── ci.yml               # CI pipeline (advanced extension)
-```
-
----
-
-*Designed for reuse semester after semester. See [docs/INSTRUCTOR_NOTES.md](docs/INSTRUCTOR_NOTES.md) for customization tips.*
