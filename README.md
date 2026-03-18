@@ -18,11 +18,11 @@
 
 ## 🟢 Part 1 — Get It Live
 
-### Step 1 — Fork this repo
+### Step 1 — Open your GitHub Classroom repo
 
-Click **Fork** (top-right of this page) → accept defaults → **Create fork**.
+Your instructor shared a GitHub Classroom assignment link. Clicking it automatically created your own copy of this repo at `github.com/YOUR_USERNAME/deploy-now-workshop`.
 
-You now have your own copy at `github.com/YOUR_USERNAME/deploy-now-workshop`.
+Open that repo now — it's where you'll make all your changes.
 
 ---
 
@@ -34,7 +34,7 @@ Go to [render.com](https://render.com) and sign up with GitHub. Free tier works 
 
 ### Step 3 — Create a Web Service
 
-In the Render dashboard: **New + → Web Service → connect your fork**
+In the Render dashboard: **New + → Web Service → connect your repo**
 
 Configure it:
 
@@ -176,11 +176,11 @@ docker --version
 docker compose version
 ```
 
-**Don't want to install locally?** Open your fork in GitHub Codespaces instead (`.devcontainer` is already configured).
+**Don't want to install locally?** Open your repo in GitHub Codespaces instead (`.devcontainer` is already configured).
 
 ---
 
-### Step 1 — Clone your fork
+### Step 1 — Clone your repo
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/deploy-now-workshop.git
