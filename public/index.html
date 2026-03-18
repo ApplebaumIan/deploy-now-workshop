@@ -10,10 +10,21 @@
            ---------------------------------------------------------------- */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+        :root {
+            --bg:          #1a1612;
+            --surface:     #242016;
+            --border:      #3d3628;
+            --text-primary:#f0e8d8;
+            --text-muted:  #a89880;
+            --accent:      #e8a020;
+            --accent-dim:  #7a4d08;
+            --accent-light:#fcd37a;
+        }
+
         body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background: #0f172a;
-            color: #e2e8f0;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text-primary);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -31,10 +42,10 @@
             text-align: center;
 
             /* ✏️ CHANGE THIS COLOR to personalize your deployment!
-               Try: #e11d48 (red), #16a34a (green), #9333ea (purple)  */
-            background: #3b82f6;
+               Try: #b91c1c (red), #166534 (green), #6d28d9 (purple)  */
+            background: var(--accent);
 
-            color: white;
+            color: #1a1612;
         }
 
         .student-banner h1 {
@@ -45,7 +56,7 @@
 
         .student-banner .tagline {
             font-size: 1.15rem;
-            opacity: 0.9;
+            color: #3d1f00;
         }
         /* ================================================================
            END STUDENT EDIT ZONE styles
@@ -59,8 +70,8 @@
         }
 
         .card {
-            background: #1e293b;
-            border: 1px solid #334155;
+            background: var(--surface);
+            border: 1px solid var(--border);
             border-radius: 0.75rem;
             padding: 1.5rem;
             margin-bottom: 1rem;
@@ -68,21 +79,24 @@
 
         .card h2 {
             font-size: 0.85rem;
-            color: #64748b;
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.08em;
             margin-bottom: 0.75rem;
         }
 
-        .card p, .card li { color: #cbd5e1; line-height: 1.7; }
+        .card p, .card li {
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
         .card ul { padding-left: 1.25rem; }
         .card li { margin-bottom: 0.3rem; }
 
         .badge {
             display: inline-block;
-            background: #14532d;
-            color: #86efac;
-            border: 1px solid #16a34a;
+            background: var(--accent-dim);
+            color: var(--accent-light);
+            border: 1px solid var(--accent);
             border-radius: 9999px;
             padding: 0.2rem 0.65rem;
             font-size: 0.75rem;
@@ -92,44 +106,44 @@
 
         .hint {
             margin-top: 0.9rem;
-            background: #0f172a;
-            border: 2px dashed #475569;
+            background: var(--bg);
+            border: 2px dashed var(--border);
             border-radius: 0.5rem;
             padding: 0.8rem 1rem;
             font-size: 0.85rem;
-            color: #94a3b8;
+            color: var(--text-primary);
         }
 
         code {
-            background: #1e293b;
+            background: var(--surface);
             padding: 0.15rem 0.4rem;
             border-radius: 0.3rem;
             font-family: 'Menlo', 'Consolas', monospace;
-            color: #fbbf24;
+            color: var(--accent);
             font-size: 0.9em;
         }
     </style>
 </head>
 <body>
 
-    <!-- ================================================================
-         👋 STUDENT EDIT ZONE — CHANGE THIS SECTION!
+<!-- ================================================================
+      👋 STUDENT EDIT ZONE — CHANGE THIS SECTION!
 
-         This is the ONLY section you need to edit for Parts 1 & 2.
+      This is the ONLY section you need to edit for Parts 1 & 2.
 
-         HOW TO EDIT:
-           1. Replace "Your Name Here" with your actual name
-           2. Replace the tagline with something fun or personal
-           3. (Optional) Change the banner background color in the
-              <style> section above — look for "CHANGE THIS COLOR"
-           4. Save → commit → push → watch Render auto-redeploy!
+      HOW TO EDIT:
+        1. Replace "Your Name Here" with your actual name
+        2. Replace the tagline with something fun or personal
+        3. (Optional) Change the banner background color in the
+           <style> section above — look for "CHANGE THIS COLOR"
+        4. Save → commit → push → watch Render auto-redeploy!
 
-         FILE: public/index.html   ← you are editing this file right now
-         ================================================================ -->
+      FILE: public/index.html   ← you are editing this file right now
+      ================================================================ -->
 
     <div class="student-banner">
         <h1>👋 Hello from <strong>Your Name Here</strong>!</h1>
-        <p class="tagline">✏️ Edit <code style="background:rgba(0,0,0,0.25);color:#fff;">public/index.html</code> and push to make this yours.</p>
+        <p class="tagline">✏️ Edit <code style="background:rgba(0,0,0,0.15);color:#1a1612;">public/index.html</code> and push to make this yours.</p>
     </div>
 
     <!-- ================================================================
