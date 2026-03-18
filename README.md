@@ -27,21 +27,6 @@ You'll never need to understand Express to complete Parts 1 and 2 — just edit 
 
 ---
 
-## 🗺️ Choose Your Path
-
-```
-┌────────────────────────────────────────────────────────────────────┐
-│  PART 1 + 2  (Required — In-Class, 50 min)                         │
-│  Fork → Deploy to Render → Edit public/index.html → Push → See live│
-├────────────────────────────────────────────────────────────────────┤
-│  PART 3  (Advanced — Lab, 1h 50m)                                  │
-│  Run with Docker locally → Read the Dockerfile → Apply to your     │
-│  own project                                                        │
-└────────────────────────────────────────────────────────────────────┘
-```
-
-> **Stuck?** See [Common Issues](#-common-issues) below or ask the instructor.
-
 ## ✅ Part 1 — Fast Deploy (Required)
 
 > **Goal:** Get your app live at a public URL before the 50-minute class ends.
