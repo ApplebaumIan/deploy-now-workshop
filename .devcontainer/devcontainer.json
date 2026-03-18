@@ -16,7 +16,12 @@
   // Install the Docker-in-Docker feature so you can run Docker commands
   // inside the devcontainer (needed for Part 3 — Docker path).
   "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      // GitHub Codespaces runs on Azure VMs. Docker 27+ enables ip6tables by default,
+      // but Azure VMs do not support ip6tables — disabling it prevents dockerd from
+      // failing to start inside the container.
+      "disableIp6tables": true
+    }
   },
 
   // Docker-in-Docker requires privileged mode so the Docker daemon can start
