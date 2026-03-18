@@ -17,6 +17,10 @@
   // inside the devcontainer (needed for Part 3 — Docker path).
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      // Use Docker CE instead of Moby. The Node.js 20 devcontainer image is based on
+      // Debian 'trixie', which removed the moby-cli packages — moby must be disabled
+      // or the feature install will fail.
+      "moby": false,
       // GitHub Codespaces runs on Azure VMs. Docker 27+ enables ip6tables by default,
       // but Azure VMs do not support ip6tables — disabling it prevents dockerd from
       // failing to start inside the container.
